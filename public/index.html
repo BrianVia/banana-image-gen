@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banana Image Generator</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script type="module">
+    // Pre-load background removal library
+    import { removeBackground } from 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm';
+    window.removeBackground = removeBackground;
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Banana Image Generator</h1>
+    <p class="subtitle">Generate images using Google's Nano Banana AI models</p>
+  </header>
+
+  <main>
+    <section class="controls">
+      <form id="generate-form">
+        <div class="template-row">
+          <div class="form-group template-selector-group">
+            <label for="template-selector">Load Template</label>
+            <select id="template-selector">
+              <option value="">-- Select a template --</option>
+            </select>
+          </div>
+          <button type="button" id="save-template-btn" class="btn-secondary btn-small">Save as Template</button>
+        </div>
+
+        <div class="form-group">
+          <label for="prompt">Prompt Template</label>
+          <textarea
+            id="prompt"
+            placeholder="A &lt;WEATHER&gt; day in &lt;CITY&gt; with &lt;STYLE&gt; style"
+            rows="4"
+          ></textarea>
+          <small>Use &lt;VARIABLE_NAME&gt; for placeholders (uppercase with underscores)</small>
+        </div>
+
+        <div id="variable-container">
+          <h3>Variables <span id="variable-count">(0 detected)</span></h3>
+          <div id="variables-list"></div>
+          <p id="no-variables" class="empty-state">Enter a prompt with variables like &lt;CITY&gt; to get started</p>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="model">Model</label>
+            <select id="model">
+              <option value="nano-banana">Nano Banana (Fast, ~5-15s)</option>
+              <option value="nano-banana-pro">Nano Banana Pro (Quality, ~15-30s)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="batch-size">Batch Size</label>
+            <input type="number" id="batch-size" value="10" min="1" max="20">
+            <small>Parallel requests (1-20)</small>
+          </div>
+
+          <div class="form-group">
+            <label for="aspect-ratio">Aspect Ratio</label>
+            <select id="aspect-ratio">
+              <option value="1:1">1:1 Square</option>
+              <option value="16:9">16:9 Landscape</option>
+              <option value="9:16">9:16 Portrait</option>
+              <option value="3:2">3:2</option>
+              <option value="2:3">2:3</option>
+              <option value="4:3">4:3</option>
+              <option value="3:4">3:4</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="remove-background">
+            <span>Remove background</span>
+          </label>
+          <small>Adds ~5-10s per image, outputs PNG with transparency</small>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" id="generate-btn" class="btn-primary">
+            <span class="btn-text">Generate Images</span>
+            <span class="btn-loading" hidden>Generating...</span>
+          </button>
+          <span id="prompt-count" class="prompt-count">0 images will be generated</span>
+        </div>
+      </form>
+    </section>
+
+    <section class="progress" id="progress-section" hidden>
+      <div class="progress-header">
+        <h3>Generation Progress</h3>
+        <button id="cancel-btn" class="btn-secondary btn-small">Cancel</button>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-stats">
+        <span id="progress-text">0 / 0 completed</span>
+        <span id="progress-time"></span>
+      </div>
+    </section>
+
+    <section class="gallery-section" id="gallery-section" hidden>
+      <div class="gallery-header">
+        <h3>Generated Images <span id="gallery-count"></span></h3>
+        <div class="gallery-actions">
+          <button id="select-all" class="btn-secondary btn-small">Select All</button>
+          <button id="deselect-all" class="btn-secondary btn-small" hidden>Deselect All</button>
+          <button id="download-selected" class="btn-secondary btn-small" disabled>Download Selected</button>
+          <button id="download-all" class="btn-primary btn-small">Download All</button>
+        </div>
+      </div>
+      <div class="gallery" id="gallery"></div>
+    </section>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox" hidden>
+      <div class="lightbox-backdrop"></div>
+      <div class="lightbox-content">
+        <button class="lightbox-close">&times;</button>
+        <img id="lightbox-image" src="" alt="">
+        <div class="lightbox-info">
+          <p id="lightbox-prompt"></p>
+          <div id="lightbox-variables"></div>
+          <button id="lightbox-download" class="btn-primary btn-small">Download</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Powered by <a href="https://openrouter.ai" target="_blank">OpenRouter</a> &amp; Google Gemini</p>
+  </footer>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

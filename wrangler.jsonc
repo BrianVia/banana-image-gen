@@ -1,0 +1,39 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "banana-image-gen",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-12-02",
+	"observability": {
+		"enabled": true
+	},
+
+	// Static assets for frontend UI
+	"assets": {
+		"directory": "./public/",
+		"binding": "ASSETS",
+		"html_handling": "auto-trailing-slash",
+		"not_found_handling": "single-page-application"
+	},
+
+	// R2 bucket for image storage
+	"r2_buckets": [
+		{
+			"binding": "R2_BUCKET",
+			"bucket_name": "banana-images"
+		}
+	],
+
+	// KV namespace for job state management
+	"kv_namespaces": [
+		{
+			"binding": "KV",
+			"id": "66f70e40f5f142b0a80a2427bc50f1b6"
+		}
+	],
+
+	// Environment variables
+	"vars": {
+		"MAX_BATCH_SIZE": "20",
+		"DEFAULT_BATCH_SIZE": "10"
+	}
+}
