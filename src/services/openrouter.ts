@@ -35,7 +35,6 @@ export async function generateImage(options: GenerateImageOptions): Promise<Gene
 			headers: {
 				Authorization: `Bearer ${apiKey}`,
 				"Content-Type": "application/json",
-				"HTTP-Referer": "https://banana-image-gen.workers.dev",
 				"X-Title": "Banana Image Generator",
 			},
 			body: JSON.stringify({

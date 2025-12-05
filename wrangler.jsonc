@@ -34,6 +34,10 @@
 	// Environment variables
 	"vars": {
 		"MAX_BATCH_SIZE": "20",
-		"DEFAULT_BATCH_SIZE": "10"
+		"DEFAULT_BATCH_SIZE": "10",
+		// Optional: Cloudflare Access authentication
+		// Leave empty to disable auth, or set your team name and AUD tag to enable
+		"CF_ACCESS_TEAM_NAME": "",
+		"CF_ACCESS_AUD": ""
 	}
 }

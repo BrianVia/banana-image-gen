@@ -10,6 +10,8 @@ export interface Env {
 	MAX_BATCH_SIZE: string;
 	DEFAULT_BATCH_SIZE: string;
 	ASSETS: Fetcher;
+	CF_ACCESS_TEAM_NAME: string;
+	CF_ACCESS_AUD: string;
 }
 
 export type AppContext = Context<{ Bindings: Env }>;
