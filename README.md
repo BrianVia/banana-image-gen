@@ -1,6 +1,9 @@
 # Banana Image Gen
 
-A Cloudflare Worker API for batch image generation using Google's Gemini models via OpenRouter.
+A Cloudflare Worker API & Simple UI for batch image generation using Google's Gemini models via OpenRouter.
+
+<img width="965" height="1470" alt="image" src="https://github.com/user-attachments/assets/73f22a9b-6554-4f7c-884f-12577280dfb7" />
+
 
 ## Features
 
