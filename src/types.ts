@@ -24,6 +24,25 @@ export const MODELS = {
 
 export type ModelKey = keyof typeof MODELS;
 
+// Custom validator for reference image (URL or base64 data URI)
+const referenceImageSchema = z
+	.string()
+	.refine(
+		(val) => {
+			// Accept valid URLs
+			try {
+				new URL(val);
+				return true;
+			} catch {
+				// Accept base64 data URIs for images
+				return /^data:image\/(png|jpeg|jpg|gif|webp);base64,[A-Za-z0-9+/]+=*$/.test(val);
+			}
+		},
+		{ message: "Must be a valid URL or base64 data URI (data:image/...;base64,...)" }
+	)
+	.optional()
+	.describe("Optional reference image as URL or base64 data URI for style/content guidance");
+
 // Generation request schema
 export const GenerateRequestSchema = z.object({
 	promptTemplate: Str({ description: "Prompt template with <VARIABLE> placeholders" }),
@@ -36,11 +55,7 @@ export const GenerateRequestSchema = z.object({
 		.enum(["1:1", "16:9", "9:16", "3:2", "2:3", "4:3", "3:4"])
 		.default("1:1")
 		.describe("Image aspect ratio"),
-	referenceImageUrl: z
-		.string()
-		.url()
-		.optional()
-		.describe("Optional URL to a reference image for style/content guidance"),
+	referenceImage: referenceImageSchema,
 });
 
 export type GenerateRequest = z.infer<typeof GenerateRequestSchema>;
