@@ -36,6 +36,11 @@ export const GenerateRequestSchema = z.object({
 		.enum(["1:1", "16:9", "9:16", "3:2", "2:3", "4:3", "3:4"])
 		.default("1:1")
 		.describe("Image aspect ratio"),
+	referenceImageUrl: z
+		.string()
+		.url()
+		.optional()
+		.describe("Optional URL to a reference image for style/content guidance"),
 });
 
 export type GenerateRequest = z.infer<typeof GenerateRequestSchema>;

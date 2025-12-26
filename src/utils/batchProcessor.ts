@@ -19,6 +19,7 @@ export interface BatchProcessorOptions {
 	model: ModelKey;
 	aspectRatio: string;
 	batchSize: number;
+	referenceImageUrl?: string;
 }
 
 export interface BatchResult {
@@ -80,13 +81,15 @@ async function processPrompt(
 	jobId: string,
 	prompt: ExpandedPrompt,
 	model: ModelKey,
-	aspectRatio: string
+	aspectRatio: string,
+	referenceImageUrl?: string
 ): Promise<BatchResult> {
 	const options: GenerateImageOptions = {
 		prompt: prompt.prompt,
 		model,
 		aspectRatio,
 		apiKey: env.OPENROUTER_API_KEY,
+		referenceImageUrl,
 	};
 
 	const result = await generateImageWithRetry(options);
@@ -129,14 +132,14 @@ async function processPrompt(
  * Process all prompts in parallel batches
  */
 export async function processBatches(options: BatchProcessorOptions): Promise<void> {
-	const { env, jobId, prompts, model, aspectRatio, batchSize } = options;
+	const { env, jobId, prompts, model, aspectRatio, batchSize, referenceImageUrl } = options;
 
 	const batches = chunk(prompts, batchSize);
 
 	for (const batch of batches) {
 		// Process batch in parallel
 		const results = await Promise.allSettled(
-			batch.map((prompt) => processPrompt(env, jobId, prompt, model, aspectRatio))
+			batch.map((prompt) => processPrompt(env, jobId, prompt, model, aspectRatio, referenceImageUrl))
 		);
 
 		// Collect completed images and errors
@@ -186,7 +189,7 @@ export async function processBatchesWithCallback(
 	options: BatchProcessorOptions,
 	onBatchComplete: (completedImages: CompletedImage[], errors: BatchResult[]) => Promise<void>
 ): Promise<{ totalCompleted: number; totalFailed: number }> {
-	const { env, jobId, prompts, model, aspectRatio, batchSize } = options;
+	const { env, jobId, prompts, model, aspectRatio, batchSize, referenceImageUrl } = options;
 
 	const batches = chunk(prompts, batchSize);
 	let totalCompleted = 0;
@@ -195,7 +198,7 @@ export async function processBatchesWithCallback(
 	for (const batch of batches) {
 		// Process batch in parallel
 		const results = await Promise.allSettled(
-			batch.map((prompt) => processPrompt(env, jobId, prompt, model, aspectRatio))
+			batch.map((prompt) => processPrompt(env, jobId, prompt, model, aspectRatio, referenceImageUrl))
 		);
 
 		// Collect completed images and errors

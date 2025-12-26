@@ -49,7 +49,7 @@ export class Generate extends OpenAPIRoute {
 
 		// Validate request body
 		const data = await this.getValidatedData<typeof this.schema>();
-		const { promptTemplate, variables, model, batchSize, aspectRatio } = data.body;
+		const { promptTemplate, variables, model, batchSize, aspectRatio, referenceImageUrl } = data.body;
 
 		// Validate that all variables in template are provided
 		const validation = validateVariables(promptTemplate, variables);
@@ -87,6 +87,7 @@ export class Generate extends OpenAPIRoute {
 				model: model as ModelKey,
 				aspectRatio,
 				batchSize: effectiveBatchSize,
+				referenceImageUrl,
 			})
 		);
 
