@@ -7,6 +7,7 @@ export interface GenerateImageOptions {
 	model: ModelKey;
 	aspectRatio?: string;
 	apiKey: string;
+	referenceImage?: string;
 }
 
 export interface GenerateImageResult {
@@ -24,12 +25,34 @@ export interface GenerateImageError {
 export type GenerateImageResponse = GenerateImageResult | GenerateImageError;
 
 /**
+ * Build message content for OpenRouter API
+ * Supports optional reference image (URL or base64 data URI) for style/content guidance
+ */
+function buildMessageContent(
+	prompt: string,
+	referenceImage?: string
+): string | Array<{ type: string; text?: string; image_url?: { url: string } }> {
+	if (!referenceImage) {
+		return prompt;
+	}
+
+	// When reference image is provided, use multimodal content array
+	// Works with both URLs and base64 data URIs
+	return [
+		{ type: "image_url", image_url: { url: referenceImage } },
+		{ type: "text", text: prompt },
+	];
+}
+
+/**
  * Generate an image using OpenRouter's nano-banana models
  */
 export async function generateImage(options: GenerateImageOptions): Promise<GenerateImageResponse> {
-	const { prompt, model, aspectRatio = "1:1", apiKey } = options;
+	const { prompt, model, aspectRatio = "1:1", apiKey, referenceImage } = options;
 
 	try {
+		const messageContent = buildMessageContent(prompt, referenceImage);
+
 		const response = await fetch(OPENROUTER_API_URL, {
 			method: "POST",
 			headers: {
@@ -39,7 +62,7 @@ export async function generateImage(options: GenerateImageOptions): Promise<Gene
 			},
 			body: JSON.stringify({
 				model: MODELS[model],
-				messages: [{ role: "user", content: prompt }],
+				messages: [{ role: "user", content: messageContent }],
 				modalities: ["image", "text"],
 				image_config: { aspect_ratio: aspectRatio },
 			}),
